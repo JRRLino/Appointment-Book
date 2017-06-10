@@ -227,6 +227,7 @@ def find(array,index,elemento):
 
     return find(array,index+1,elemento);
 
+#Retornará uma lista de tuplas
 def organizar(linhas):
     itens = []
 
@@ -292,31 +293,48 @@ def organizar(linhas):
 def listar():
     fp = open(TODO_FILE, 'r');
 
-    return
+    itens = organizar(fp.readlines());
 
+    print("Desordenada: ",itens);
+
+    itens = ordenarPorPrioridade(itens);
+
+    print("Ordenada:", itens);
 
 def ordenarPorDataHora(itens):
     ################ COMPLETAR
 
     return itens
 
-
 def ordenarPorPrioridade(itens):
-    ################ COMPLETAR
+    ordenada = [];
 
-    return itens
+    while(itens != []):
+        i = 0;
+        maior_index = -1;
+        maior_pri = '(Z)';
 
+        for (desc,(data,hora,pri,contexto,projeto)) in itens:
+            if len(pri) == 3:
+                if ord(pri[1]) < ord(maior_pri[1]):
+                    maior_pri = pri;
+                    maior_index = i;
+            i = i + 1;
+
+        ordenada.append(itens[maior_index]);
+        itens.pop(maior_index);
+
+    return ordenada;
 
 def fazer(num):
     ################ COMPLETAR
 
-    return
-
+    return "";
 
 def remover():
     ################ COMPLETAR
 
-    return
+    return "";
 
 
 # prioridade é uma letra entre A a Z, onde A é a mais alta e Z a mais baixa.
@@ -325,7 +343,7 @@ def remover():
 def priorizar(num, prioridade):
     ################ COMPLETAR
 
-    return
+    return "";
 
 
 # Esta função processa os comandos e informações passados através da linha de comando e identifica
@@ -348,7 +366,7 @@ def processarComandos(comandos):
         adicionar(itemParaAdicionar[0], itemParaAdicionar[1])  # novos itens não têm prioridade
     elif comandos[1] == LISTAR:
         listar();
-        return
+
         ################ COMPLETAR
 
     elif comandos[1] == REMOVER:
