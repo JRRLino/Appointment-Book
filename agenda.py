@@ -39,20 +39,30 @@ def printCores(texto, cor) :
 #
 # Qualquer elemento da tupla que contenha um string vazio ('') não
 # deve ser levado em consideração. 
+
+
+def concatenarExtras(extras):
+    s = "";
+    for x in extras:
+        s = s + x;
+
+    return s;
 def adicionar(descricao, extras):
 
-  # não é possível adicionar uma atividade que não possui descrição. 
+  # não é possível adicionar uma atividade que não possui descrição.
   if descricao  == '' :
     return False
-  
-
-  ################ COMPLETAR
-
+  else:
+    novaAtividade = descricao + concatenarExtras(extras);
 
   # Escreve no TODO_FILE. 
   try: 
+    #Abre o arquivo no modo Append
     fp = open(TODO_FILE, 'a')
+
+    #Escreve sobre o arquivo uma novaAtividade
     fp.write(novaAtividade + "\n")
+
     fp.close()
   except IOError as err:
     print("Não foi possível escrever para o arquivo " + TODO_FILE)
@@ -62,45 +72,84 @@ def adicionar(descricao, extras):
   return True
 
 
+#Valida a letra da contida na prioridade
+def prioridadeLetraValida(char):
+    if ((ord(char) >= ord('A') and ord(char) <= ord('Z')) and (ord(char) >= ord('a') and ord(char) <= ord('z'))):
+        return True;
+
+    return False;
+
 # Valida a prioridade.
 def prioridadeValida(pri):
 
-  ################ COMPLETAR
+  if len(pri) == 3 and pri[0] == '(' and pri[2] == ')' and prioridadeLetraValida(pri[1]):
+      return True;
   
   return False
 
-def doisPrimeiros():
-	
+def HoradoisPrimeiros(horaMin):
+    inteiro = int(horaMin[0]+horaMin[1]);
 
+    if(inteiro >= 0 and inteiro <= 23):
+        return True;
+    return False;
+def HoradoisUltimos(horaMin):
+    inteiro = int(horaMin[2]+horaMin[3]);
+
+    if(inteiro >= 00 and inteiro <= 59):
+        return True;
+
+    return False;
 # Valida a hora. Consideramos que o dia tem 24 horas, como no Brasil, ao invés
 # de dois blocos de 12 (AM e PM), como nos EUA.
 def horaValida(horaMin) :
-  if len(horaMin) != 4 or not soDigitos(horaMin) or not doisPrimeiros or not doisUltimos:
-    return False
+  if len(horaMin) == 4 and soDigitos(horaMin) and doisPrimeiros(horaMin) and doisUltimos(horaMin):
+      return True;
   else:
-    ################ COMPLETAR
-    return True
+      return False;
 
 # Valida datas. Verificar inclusive se não estamos tentando
 # colocar 31 dias em fevereiro. Não precisamos nos certificar, porém,
 # de que um ano é bissexto. 
+
+def DataMesValido(data):
+    soma = int(data[2]+data[3]);
+
+    if(soma >= 0 and soma <= 12):
+        return True;
+
+    return False;
+
+def DataDiaValido(data):
+    soma = int(data[0]+data[1]);
+
+    if(soma >= 0 and soma <= 30):
+        if(soma == 30 and data[2]+[3] == "02"):
+            return False;
+        return True;
+
+    return False;
+
 def dataValida(data) :
 
-  ################ COMPLETAR
+  if len(data) == 8 and soDigitos(data) and DataDiaValido(data) and DataMesValido(data):
+      return True;
 
   return False
 
 # Valida que o string do projeto está no formato correto. 
 def projetoValido(proj):
 
-  ################ COMPLETAR
+  if len(proj) >= 2 and proj[0] == '+':
+      return True;
 
   return False
 
 # Valida que o string do contexto está no formato correto. 
 def contextoValido(cont):
 
-  ################ COMPLETAR
+  if len(cont) >= 2 and cont[0] == '@':
+      return True;
 
   return False
 
@@ -129,13 +178,17 @@ def soDigitos(numero) :
 # Todos os itens menos DESC são opcionais. Se qualquer um deles estiver fora do formato, por exemplo,
 # data que não tem todos os componentes ou prioridade com mais de um caractere (além dos parênteses),
 # tudo que vier depois será considerado parte da descrição.  
+def TokensToString(tokens):
+    if(tokens == []):
+        return "";
+
+    elemento = tokens.pop(0);
+    return elemento + " " + TokensToString(tokens);
+
 def organizar(linhas):
   itens = []
 
-  #print(linhas);
-  	
   for l in linhas:
-    print(l);
     data = ''
     hora = ''
     pri = ''
@@ -153,9 +206,34 @@ def organizar(linhas):
     # faz-se o mesmo para prioridade. Neste ponto, verifica-se os últimos tokens
     # para saber se são contexto e/ou projeto. Quando isso terminar, o que sobrar
     # corresponde à descrição. É só transformar a lista de tokens em um string e
-    # construir a tupla com as informações disponíveis. 
+    # construir a tupla com as informações disponíveis.
 
-    ################ COMPLETAR
+    #Checando data
+    if(dataValida(tokens[0])):
+        data = tokens[0];
+        tokens.pop(0);
+
+    #Checando hora
+    if(horaValida(tokens[0])):
+        hora = tokens[0];
+        tokens.pop(0);
+
+    #Checando prioridade
+    if(prioridadeValida(tokens[0])):
+        pri = tokens[0];
+        tokens.pop(0);
+
+    #Checando Projeto
+    if(projetoValido(tokens[-1])):
+        projeto = tokens[-1];
+        tokens.pop(-1);
+
+    #Checando Contexto
+    if(contextoValido(tokens[-1])):
+        contexto = tokens[-1];
+        tokens.pop(-1);
+
+    desc = TokensToString(tokens);
 
     itens.append((desc, (data, hora, pri, contexto, projeto)))
 
@@ -171,7 +249,9 @@ def organizar(linhas):
 # é uma das tarefas básicas do projeto, porém. 
 def listar():
 
-  ################ COMPLETAR
+  fp = open(TODO_FILE,'r');
+  
+
   return 
 
 def ordenarPorDataHora(itens):
@@ -207,8 +287,6 @@ def priorizar(num, prioridade):
 
   return 
 
-
-
 # Esta função processa os comandos e informações passados através da linha de comando e identifica
 # que função do programa deve ser invocada. Por exemplo, se o comando 'adicionar' foi usado,
 # isso significa que a função adicionar() deve ser invocada para registrar a nova atividade.
@@ -216,39 +294,40 @@ def priorizar(num, prioridade):
 # usando o método strip(). Além disso, realiza a validação de horas, datas, prioridades, contextos e
 # projetos. 
 def processarComandos(comandos) :
-  print(comandos);
+  #print(comandos);
   
   if comandos[1] == ADICIONAR:
     comandos.pop(0) # remove 'agenda.py'
     comandos.pop(0) # remove 'adicionar'
     itemParaAdicionar = organizar([' '.join(comandos)])[0]
-    
+
     print(itemParaAdicionar)
-    
+
     # itemParaAdicionar = (descricao, (prioridade, data, hora, contexto, projeto))
     adicionar(itemParaAdicionar[0], itemParaAdicionar[1]) # novos itens não têm prioridade
   elif comandos[1] == LISTAR:
-    return    
+    listar();
+    return
     ################ COMPLETAR
 
   elif comandos[1] == REMOVER:
-    return    
+    return
 
-    ################ COMPLETAR    
+    ################ COMPLETAR
 
   elif comandos[1] == FAZER:
-    return    
+    return
 
     ################ COMPLETAR
 
   elif comandos[1] == PRIORIZAR:
-    return    
+    return
 
     ################ COMPLETAR
 
   else :
     print("Comando inválido.")
-    
+
   
 # sys.argv é uma lista de strings onde o primeiro elemento é o nome do programa
 # invocado a partir da linha de comando e os elementos restantes são tudo que

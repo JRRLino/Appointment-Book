@@ -1,4 +1,4 @@
-Comer menos açúcar
+Comer menos açúcar 
 23052017 1030 Reunião com Huguinho, Luizinho e Zezinho. @Skype +Pesquisa
 (B) Terminar a especificação do projeto de IF968. +IF968
 (B) Publicar a especificação do projeto de IF968 terminada. +IF968
@@ -11,6 +11,3 @@ Comer menos açúcar
 (B) Revisar artigos SBES Insightful Ideas +Service
 (B) Revisar artigos SBLP +Service
 (D) Read "Optimizing energy consumption of GUIs in android apps: A multi-objective approach."
-Testando Testando 
-Comer menos a�ucar 
-(A) 10062017 1400 Estudar Reflexao da Luz @Casa
