@@ -45,10 +45,10 @@ def printCores(texto, cor):
 def concatenarExtras(extras):
     s = "";
     for x in extras:
-        s = s + " " + x;
+        if(x != '' and x != ' '):
+            s = s + " " + x;
 
     return s;
-
 
 def adicionar(descricao, extras):
     # não é possível adicionar uma atividade que não possui descrição.
@@ -115,11 +115,15 @@ def HoradoisUltimos(horaMin):
 
 # Valida a hora. Consideramos que o dia tem 24 horas, como no Brasil, ao invés
 # de dois blocos de 12 (AM e PM), como nos EUA.
-def horaValida(horaMin):
-    if len(horaMin) == 4 and soDigitos(horaMin) and HoradoisPrimeiros(horaMin) and HoradoisUltimos(horaMin):
-        return True;
-    else:
-        return False;
+def horaValida(tokens,i):
+
+    if i == len(tokens):
+        return "";
+
+    if len(tokens[i]) == 4 and soDigitos(tokens[i]) and HoradoisPrimeiros(tokens[i]) and HoradoisUltimos(tokens[i]):
+        return tokens[i];
+
+    return horaValida(tokens,i+1);
 
 
 # Valida datas. Verificar inclusive se não estamos tentando
@@ -146,27 +150,39 @@ def DataDiaValido(data):
     return False;
 
 
-def dataValida(data):
-    if len(data) == 8 and soDigitos(data) and DataDiaValido(data) and DataMesValido(data):
-        return True;
+def dataValida(tokens,i):
 
-    return False
+    if(i == len(tokens)):
+        return "";
+
+    if len(tokens[i]) == 8 and soDigitos(tokens[i]) and DataDiaValido(tokens[i]) and DataMesValido(tokens[i]):
+        return tokens[i]
+
+    return dataValida(tokens,i+1);
 
 
 # Valida que o string do projeto está no formato correto.
-def projetoValido(proj):
-    if len(proj) >= 2 and proj[0] == '+':
-        return True;
+def projetoValido(tokens,i):
 
-    return False
+    if(i == len(tokens)):
+        return "";
+
+    if len(tokens[i]) >= 2 and tokens[i][0] == '+':
+        return tokens[i];
+
+    return projetoValido(tokens,i+1);
 
 
 # Valida que o string do contexto está no formato correto.
-def contextoValido(cont):
-    if len(cont) >= 2 and cont[0] == '@':
-        return True;
+def contextoValido(tokens,i):
 
-    return False
+    if(i == len(tokens)):
+        return "";
+
+    if len(tokens[i]) >= 2 and tokens[i][0] == '@':
+        return tokens[i];
+
+    return contextoValido(tokens,i+1);
 
 
 # Valida que a data ou a hora contém apenas dígitos, desprezando espaços
@@ -240,24 +256,24 @@ def organizar(linhas):
             tokens.pop(find(tokens,0,pri));
 
         # Checando data
-        if (dataValida(tokens[0])):
-            data = tokens[0];
-            tokens.pop(0);
+        if (dataValida(tokens,0) != ""):
+            data = dataValida(tokens,0);
+            tokens.pop(find(tokens,0,data));
 
         # Checando hora
-        if (horaValida(tokens[0])):
-            hora = tokens[0];
-            tokens.pop(0);
+        if (horaValida(tokens,0) != ""):
+            hora = horaValida(tokens,0);
+            tokens.pop(find(tokens,0,hora));
 
         # Checando Projeto
-        if (projetoValido(tokens[-1])):
-            projeto = tokens[-1];
-            tokens.pop(-1);
+        if (projetoValido(tokens,0) != ""):
+            projeto = projetoValido(tokens,0);
+            tokens.pop(find(tokens,0,projeto));
 
         # Checando Contexto
-        if (contextoValido(tokens[-1])):
-            contexto = tokens[-1];
-            tokens.pop(-1);
+        if (contextoValido(tokens,0) != ""):
+            contexto = contextoValido(tokens,0);
+            tokens.pop(find(tokens,0,contexto));
 
         desc = TokensToString(tokens);
 

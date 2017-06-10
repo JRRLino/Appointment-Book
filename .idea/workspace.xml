@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="c14eaea1-b408-4287-8f21-ed87e27b7b99" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/agenda.py" afterPath="$PROJECT_DIR$/agenda.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/todo.bak.txt" afterPath="$PROJECT_DIR$/todo.bak.txt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/todo.txt" afterPath="$PROJECT_DIR$/todo.txt" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -24,8 +23,8 @@
           <file leaf-file-name="agenda.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/agenda.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="369">
-                  <caret line="51" column="0" lean-forward="true" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
+                <state relative-caret-position="397">
+                  <caret line="226" column="0" lean-forward="true" selection-start-line="226" selection-start-column="0" selection-end-line="226" selection-end-column="0" />
                   <folding />
                 </state>
               </provider>
@@ -38,8 +37,8 @@
           <file leaf-file-name="agenda.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/agenda.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="444">
-                  <caret line="269" column="29" lean-forward="true" selection-start-line="269" selection-start-column="29" selection-end-line="269" selection-end-column="29" />
+                <state relative-caret-position="1141">
+                  <caret line="278" column="0" lean-forward="true" selection-start-line="278" selection-start-column="0" selection-end-line="278" selection-end-column="0" />
                   <folding />
                 </state>
               </provider>
@@ -300,15 +299,15 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="4" />
+      <option name="time" value="5" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/agenda.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="369">
-          <caret line="51" column="0" lean-forward="true" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
+        <state relative-caret-position="397">
+          <caret line="226" column="0" lean-forward="true" selection-start-line="226" selection-start-column="0" selection-end-line="226" selection-end-column="0" />
           <folding />
         </state>
       </provider>
