@@ -302,9 +302,26 @@ def listar():
     print("Ordenada:", itens);
 
 def ordenarPorDataHora(itens):
-    ################ COMPLETAR
+    ordenada = [];
 
-    return itens
+    while (itens != []):
+        i = 0;
+        maior_index = -1;
+        maior_pri = '(Z)';
+        maior_data = '99999999'
+        maior_hora = '2359'
+
+        for (desc, (data, hora, pri, contexto, projeto)) in itens:
+            if len(data) == 8 and len(pri) == 3:
+                if ord(pri[1]) <= ord(maior_pri[1]) and int(data) < int(maior_data):
+                    maior_pri = pri;
+                    maior_index = i;
+            i = i + 1;
+
+        ordenada.append(itens[maior_index]);
+        itens.pop(maior_index);
+
+    return ordenada;
 
 def ordenarPorPrioridade(itens):
     ordenada = [];
