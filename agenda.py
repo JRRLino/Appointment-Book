@@ -298,13 +298,19 @@ def listar():
 
     print("Ordenada por Prioridade:", itens);
 
-    itens = ordenarPorDataHora(itens);
+    ordenarPorDataHora(itens);
 
     print("Ordenada por DataHora: ",itens);
 
 #Verifica se a data1 e menor que data2
 def dataMenor(data1,data2):
-    if(int(data1[4]+data1[5]+data1[6]+data1[7]) < int(data2[4]+data2[5]+data2[6]+data2[7])):
+    if(data1 == "" and data2 != ""):
+        return -1;
+    elif(data1 != "" and data2 == ""):
+        return 1;
+    elif(data1 == "" and data2 == ""):
+        return 0;
+    elif(int(data1[4]+data1[5]+data1[6]+data1[7]) < int(data2[4]+data2[5]+data2[6]+data2[7])):
         return 1;
     elif(int(data1[4] + data1[5] + data1[6] + data1[7]) == int(data2[4] + data2[5] + data2[6] + data2[7])):
         if(int(data1[2]+data1[3]) < int(data2[2]+data2[3])):
@@ -319,6 +325,12 @@ def dataMenor(data1,data2):
 
 #Verifica se a hora1 e menor que hora2
 def horaMenor(hora1,hora2):
+    if(hora1 == "" and hora2 != ""):
+        return -1;
+    elif(hora1 != "" and hora2 == ""):
+        return 1;
+    elif(hora1 == "" and hora2 == ""):
+        return 0;
     if(int(hora1[0]+hora1[1]) < int(hora2[0]+hora2[1])):
         return 1;
     elif (int(hora1[0] + hora1[1]) == int(hora2[0] + hora2[1])):
@@ -329,59 +341,39 @@ def horaMenor(hora1,hora2):
 
     return -1;
 
+
+def swap(item1,item2):
+
+    aux = item1;
+    item1 = item2;
+    item2 = aux;
+
+    return item1,item2;
+
+#Baseado em Selection Sort
+#Supoe-se que os itens ja foram ordenados por prioridade
+'''
+============================
+OBS: Esta funcao NAO retornara algo!!!
+===========================
+'''
 def ordenarPorDataHora(itens):
-    if len(itens) == 0:
-        return itens;
 
-    pivo = itens[len(itens)//2];
+    i = 0;
+    while(i < len(itens)-1):
+        j = i + 1;
+        while(j < len(itens)):
+            if(itens[i][1][2] == itens[j][1][2]):
+                if(dataMenor(itens[i][1][0],itens[j][1][0]) == 0):
+                    if(horaMenor(itens[i][1][1],itens[j][1][1]) == -1):
+                        itens[i],itens[j] = swap(itens[i],itens[j]);
+                if(dataMenor(itens[i][1][0],itens[j][1][0]) == -1):
+                    itens[i],itens[j] = swap(itens[i],itens[j]);
+            j = j + 1;
 
-    if(pivo[1][2] == ""):
-        p = " ";
-    else:
+        i = i + 1;
 
-        p = pivo[1][2][1];
-
-    if(pivo[1][0] == ""):
-        d = '00000000';
-    else:
-        d = pivo[1][0];
-
-    if(pivo[1][1] == ""):
-        h = '0000';
-    else:
-        h = pivo[1][1];
-
-    maiores = [];
-    menores = [];
-    iguais = [];
-    SemPrioridade = [];
-
-    for x in itens:
-        if(x[1][2] == ""):
-            SemPrioridade.append(x);
-        elif(ord(x[1][2][1]) > ord(p)):
-            maiores.append(x);
-        elif(ord(x[1][2][1]) < ord(p)):
-            menores.append(x);
-        elif(ord(x[1][2][1]) == ord(p)):
-            if(x[1][0] == "" and x[1][0] != d):
-                SemPrioridade.append(x);
-            elif(dataMenor(x[1][0],d) == 1):
-                menores.append(x);
-            elif(dataMenor(x[1][0],d) == -1):
-                maiores.append(x);
-            elif(dataMenor(x[1][0],d) == 0):
-                if(x[1][1] == ""):
-                    SemPrioridade.append(x);
-                elif(horaMenor(x[1][1],h) == 1):
-                    menores.append(x);
-                elif(horaMenor(x[1][1],h) == -1):
-                    maiores.append(x);
-                elif(horaMenor(x[1][1],h) == 0):
-                    SemPrioridade.append(x);
-
-    return ordenarPorPrioridade(menores) + iguais + ordenarPorPrioridade(maiores) + SemPrioridade;
-
+#Baseado em QuickSort
 def ordenarPorPrioridade(itens):
 
     if len(itens) == 0:
