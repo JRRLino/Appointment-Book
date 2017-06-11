@@ -84,13 +84,10 @@ def prioridadeLetraValida(char):
 
 # Valida a prioridade.
 def prioridadeValida(tokens,i):
-    print(tokens);
-
     if(i == len(tokens)):
         return "";
 
     if len(tokens[i]) == 3:
-        print("Encontrado!",tokens[i]);
         if(tokens[i][0] == '(' and prioridadeLetraValida(tokens[i][1]) and tokens[i][2] == ')'):
             return tokens[i];
 
@@ -299,49 +296,120 @@ def listar():
 
     itens = ordenarPorPrioridade(itens);
 
-    print("Ordenada:", itens);
+    print("Ordenada por Prioridade:", itens);
+
+    itens = ordenarPorDataHora(itens);
+
+    print("Ordenada por DataHora: ",itens);
+
+#Verifica se a data1 e menor que data2
+def dataMenor(data1,data2):
+    if(int(data1[4]+data1[5]+data1[6]+data1[7]) < int(data2[4]+data2[5]+data2[6]+data2[7])):
+        return 1;
+    elif(int(data1[4] + data1[5] + data1[6] + data1[7]) == int(data2[4] + data2[5] + data2[6] + data2[7])):
+        if(int(data1[2]+data1[3]) < int(data2[2]+data2[3])):
+            return 1;
+        elif (int(data1[2] + data1[3]) == int(data2[2] + data2[3])):
+            if(int(data1[0]+data2[1]) < int(data2[0]+data2[1])):
+                return 1;
+            elif(int(data1[0]+data2[1]) == int(data2[0]+data2[1])):
+                return 0;
+
+    return -1;
+
+#Verifica se a hora1 e menor que hora2
+def horaMenor(hora1,hora2):
+    if(int(hora1[0]+hora1[1]) < int(hora2[0]+hora2[1])):
+        return 1;
+    elif (int(hora1[0] + hora1[1]) == int(hora2[0] + hora2[1])):
+        if(int(hora1[2]+hora1[3]) < int(hora2[2]+hora2[3])):
+            return 1;
+        if (int(hora1[2] + hora1[3]) == int(hora2[2] + hora2[3])):
+            return 0;
+
+    return -1;
 
 def ordenarPorDataHora(itens):
-    ordenada = [];
+    if len(itens) == 0:
+        return itens;
 
-    while (itens != []):
-        i = 0;
-        maior_index = -1;
-        maior_pri = '(Z)';
-        maior_data = '99999999'
-        maior_hora = '2359'
+    pivo = itens[len(itens)//2];
 
-        for (desc, (data, hora, pri, contexto, projeto)) in itens:
-            if len(data) == 8 and len(pri) == 3:
-                if ord(pri[1]) <= ord(maior_pri[1]) and int(data) < int(maior_data):
-                    maior_pri = pri;
-                    maior_index = i;
-            i = i + 1;
+    if(pivo[1][2] == ""):
+        p = " ";
+    else:
 
-        ordenada.append(itens[maior_index]);
-        itens.pop(maior_index);
+        p = pivo[1][2][1];
 
-    return ordenada;
+    if(pivo[1][0] == ""):
+        d = '00000000';
+    else:
+        d = pivo[1][0];
+
+    if(pivo[1][1] == ""):
+        h = '0000';
+    else:
+        h = pivo[1][1];
+
+    maiores = [];
+    menores = [];
+    iguais = [];
+    SemPrioridade = [];
+
+    for x in itens:
+        if(x[1][2] == ""):
+            SemPrioridade.append(x);
+        elif(ord(x[1][2][1]) > ord(p)):
+            maiores.append(x);
+        elif(ord(x[1][2][1]) < ord(p)):
+            menores.append(x);
+        elif(ord(x[1][2][1]) == ord(p)):
+            if(x[1][0] == "" and x[1][0] != d):
+                SemPrioridade.append(x);
+            elif(dataMenor(x[1][0],d) == 1):
+                menores.append(x);
+            elif(dataMenor(x[1][0],d) == -1):
+                maiores.append(x);
+            elif(dataMenor(x[1][0],d) == 0):
+                if(x[1][1] == ""):
+                    SemPrioridade.append(x);
+                elif(horaMenor(x[1][1],h) == 1):
+                    menores.append(x);
+                elif(horaMenor(x[1][1],h) == -1):
+                    maiores.append(x);
+                elif(horaMenor(x[1][1],h) == 0):
+                    SemPrioridade.append(x);
+
+    return ordenarPorPrioridade(menores) + iguais + ordenarPorPrioridade(maiores) + SemPrioridade;
 
 def ordenarPorPrioridade(itens):
-    ordenada = [];
 
-    while(itens != []):
-        i = 0;
-        maior_index = -1;
-        maior_pri = '(Z)';
+    if len(itens) == 0:
+        return itens;
 
-        for (desc,(data,hora,pri,contexto,projeto)) in itens:
-            if len(pri) == 3:
-                if ord(pri[1]) < ord(maior_pri[1]):
-                    maior_pri = pri;
-                    maior_index = i;
-            i = i + 1;
+    pivo = itens[len(itens)//2];
 
-        ordenada.append(itens[maior_index]);
-        itens.pop(maior_index);
+    if(pivo[1][2] == ""):
+        p = " ";
+    else:
+        p = pivo[1][2][1];
 
-    return ordenada;
+    maiores = [];
+    menores = [];
+    iguais = [];
+    SemPrioridade = [];
+
+    for x in itens:
+        if(x[1][2] == ""):
+            SemPrioridade.append(x);
+        elif(ord(x[1][2][1]) > ord(p)):
+            maiores.append(x);
+        elif(ord(x[1][2][1]) < ord(p)):
+            menores.append(x);
+        elif(ord(x[1][2][1]) == ord(p)):
+            iguais.append(x);
+
+    return ordenarPorPrioridade(menores) + iguais + ordenarPorPrioridade(maiores) + SemPrioridade;
 
 def fazer(num):
     ################ COMPLETAR
@@ -370,14 +438,11 @@ def priorizar(num, prioridade):
 # usando o método strip(). Além disso, realiza a validação de horas, datas, prioridades, contextos e
 # projetos.
 def processarComandos(comandos):
-    # print(comandos);
 
     if comandos[1] == ADICIONAR:
         comandos.pop(0)  # remove 'agenda.py'
         comandos.pop(0)  # remove 'adicionar'
         itemParaAdicionar = organizar([' '.join(comandos)])[0]
-
-        print(itemParaAdicionar)
 
         # itemParaAdicionar = (descricao, (prioridade, data, hora, contexto, projeto))
         adicionar(itemParaAdicionar[0], itemParaAdicionar[1])  # novos itens não têm prioridade
