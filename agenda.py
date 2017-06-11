@@ -288,8 +288,10 @@ def organizar(linhas):
 # determinado projeto; (vi) atividades de determinado dia (data específica, hoje ou amanhã). Isso não
 # é uma das tarefas básicas do projeto, porém.
 
+#Deixando o dicionario como global
+dicionario = {};
+
 def numerando(itens):
-    dicionario = {};
     i = 1;
 
     for x in itens:
@@ -306,19 +308,26 @@ def imprimindo(dicionario,itens):
         elif(x[1][2] == "(B)"):
             COR = GREEN;
         elif(x[1][2] == "(C)"):
-            COR = YELLOW;
+            COR = BLUE;
         elif(x[1][2] == "(D)"):
             COR = CYAN;
         else:
-            COR = BOLD;
+            COR = RESET;
 
         printCores(str(dicionario[x])+" ",COR);
-        printCores(x[1][2]+" ",COR);
-        printCores(x[1][0]+" ",COR);
-        printCores(x[1][1]+" ",COR);
+
+        if(x[1][2] != ""):
+            printCores(x[1][2]+" ",COR);
+
+        if(x[1][0] != ""):
+            printCores(x[1][0][0]+x[1][0][1]+"/"+x[1][0][2]+x[1][0][3]+"/"+x[1][0][4]+x[1][0][5]+x[1][0][6]+x[1][0][7]+" ",COR);
+        if(x[1][1] != ""):
+            printCores(x[1][1][0]+x[1][1][1]+"h"+x[1][1][2]+x[1][1][3]+"m"+" ",COR);
         printCores(x[0]+" ",COR);
-        printCores(x[1][3]+" ",COR);
-        printCores(x[1][4]+" ",COR);
+        if(x[1][3] != ""):
+            printCores(x[1][3]+" ",COR);
+        if(x[1][4] != ""):
+            printCores(x[1][4]+" ",COR);
         print();
 
 def listar():
@@ -338,6 +347,7 @@ def listar():
     #Imprimindo na tela
     imprimindo(dicionario,itens);
 
+    fp.close();
 
 #Verifica se a data1 e menor que data2
 def dataMenor(data1,data2):
@@ -387,7 +397,7 @@ def swap(item1,item2):
 
     return item1,item2;
 
-#Baseado em Selection Sort
+#Baseado no Selection Sort
 #Supoe-se que os itens ja foram ordenados por prioridade
 '''
 ============================
@@ -440,24 +450,113 @@ def ordenarPorPrioridade(itens):
 
     return ordenarPorPrioridade(menores) + iguais + ordenarPorPrioridade(maiores) + SemPrioridade;
 
+def fazerAuxiliar(dicionario,num):
+    g = open(ARCHIVE_FILE,"a");
+
+    encontrou = False;
+
+    for key,value in dicionario.items():
+        print(key,value);
+        if(int(value) == int(num)):
+            g.write(key[0] + concatenarExtras(key[1]));
+            g.write('\n');
+            encontrou = True;
+
+    if (not encontrou):
+        printCores("Nao foi possivel encontrar uma atividade com o numero dado!\n", CYAN);
+
+    g.close();
+
 def fazer(num):
-    ################ COMPLETAR
 
-    return "";
+    f = open(TODO_FILE,"r");
 
-def remover():
-    ################ COMPLETAR
+    backup = f.readlines();
 
-    return "";
+    itens = organizar(backup);
+
+    dicionario = numerando(itens);
+
+    f.close();
+
+    '''Jogando para a funcao remover Remover do arquivo todo.txt'''
+    remover(num);
+
+    fazerAuxiliar(dicionario,num);
+
+def removerAuxiliar(dicionario,num):
+    g = open(TODO_FILE,"w");
+
+    encontrou = False;
+
+    for key,value in dicionario.items():
+        #print(key,value);
+        if (int(value) != int(num)):
+            g.write(key[0] + concatenarExtras(key[1]));
+            g.write("\n");
+        else:
+            encontrou = True;
+
+    if(not encontrou):
+        printCores("Nao foi possivel encontrar uma atividade com o numero dado!\n",CYAN);
+    g.close();
+
+def remover(num):
+
+    f = open(TODO_FILE,"r");
+
+    #Salvando arquivo na memoria
+    backup = f.readlines();
+
+    #transformando em tuplas
+    itens = organizar(backup);
+
+    #Numerando e salvando em um dicionario
+    dicionario = numerando(itens);
+
+    f.close();
+
+    removerAuxiliar(dicionario,num);
 
 
 # prioridade é uma letra entre A a Z, onde A é a mais alta e Z a mais baixa.
 # num é o número da atividade cuja prioridade se planeja modificar, conforme
 # exibido pelo comando 'l'.
-def priorizar(num, prioridade):
-    ################ COMPLETAR
 
-    return "";
+def priorizar_auxiliar(dicionario,num,p):
+    g = open(TODO_FILE,"w");
+
+    encontrou = False;
+
+    for key,value in dicionario.items():
+        if(int(value) != int(num)):
+            g.write(key[0] + concatenarExtras(key[1]));
+            g.write('\n');
+        else:
+            g.write(key[0] + key[1][0] + " " + key[1][1] + " " +'('+p+')' + " " + key[1][3] + key[1][4]);
+            g.write('\n');
+            encontrou = True;
+
+    if (not encontrou):
+        printCores("Nao foi possivel modificar uma atividade com o numero dado!\n", CYAN);
+
+    g.close();
+
+def priorizar(num, p):
+
+    f = open(TODO_FILE,"r");
+
+    backup = f.readlines();
+
+    itens = organizar(backup);
+
+    dicionario = numerando(itens);
+
+    #imprimindo(dicionario,itens);
+
+    f.close();
+
+    priorizar_auxiliar(dicionario,num,p);
 
 
 # Esta função processa os comandos e informações passados através da linha de comando e identifica
@@ -466,6 +565,19 @@ def priorizar(num, prioridade):
 # O bloco principal fica responsável também por tirar espaços em branco no início e fim dos strings
 # usando o método strip(). Além disso, realiza a validação de horas, datas, prioridades, contextos e
 # projetos.
+
+
+#Verificando o comando de remover
+def verificar(comando):
+
+    s = ""
+
+    for x in comando:
+        s = s + x;
+
+    if(soDigitos(s)):
+        return int(s);
+
 def processarComandos(comandos):
 
     if comandos[1] == ADICIONAR:
@@ -478,22 +590,25 @@ def processarComandos(comandos):
     elif comandos[1] == LISTAR:
         listar();
 
-        ################ COMPLETAR
-
     elif comandos[1] == REMOVER:
-        return
+        comandos.pop(0) #remove 'agenda.py'
+        comandos.pop(0) #remove 'remover'
 
-        ################ COMPLETAR
+        if(verificar(comandos) != -1):
+            remover(verificar(comandos));
 
     elif comandos[1] == FAZER:
-        return
+        comandos.pop(0) #remove 'agenda.py'
+        comandos.pop(0) #remove 'fazer;
 
-        ################ COMPLETAR
+        if(verificar(comandos) != -1):
+            fazer(verificar(comandos));
 
     elif comandos[1] == PRIORIZAR:
-        return
+        comandos.pop(0) #remove 'agenda.py';
+        comandos.pop(0) #remove 'priorizar'
 
-        ################ COMPLETAR
+        priorizar(comandos[0],comandos[1]);
 
     else:
         print("Comando inválido.")

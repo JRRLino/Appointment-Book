@@ -1,6 +1,4 @@
-Testando Testando
-Estudar Reflexao da Luz  10062017 1400 (B) @Casa
-Estudar Quimica  (A)
-Ler artigo IST.  23052017 1800 (A) +Servico
-Publicar a especificao do projeto de IF968 terminada.  (B) +IF968
-Dormir  11062017 0300 @Casa
+Estudar Quimica  (C)
+Dormir  11062017 0300 (A) @Casa
+Ler artigo IST.  23052017 1800 (C) +Servico
+Publicar a especificao do projeto de IF968 terminada.  (C) +IF968
