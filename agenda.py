@@ -25,7 +25,7 @@ LISTAR = 'l'
 # printCores('Texto amarelo e negrito', YELLOW + BOLD)
 
 def printCores(texto, cor):
-    print(cor + texto + RESET)
+    print(cor + texto + RESET,end="")
 
 
 # Adiciona um compromisso aa agenda. Um compromisso tem no minimo
@@ -287,20 +287,57 @@ def organizar(linhas):
 # (ii) atividades a ser realizadas em certo contexto; (iii) atividades associadas com
 # determinado projeto; (vi) atividades de determinado dia (data específica, hoje ou amanhã). Isso não
 # é uma das tarefas básicas do projeto, porém.
+
+def numerando(itens):
+    dicionario = {};
+    i = 1;
+
+    for x in itens:
+        dicionario[x] = i;
+
+        i = i + 1;
+
+    return dicionario;
+
+def imprimindo(dicionario,itens):
+    for x in itens:
+        if (x[1][2] == "(A)"):
+            COR = BOLD+RED;
+        elif(x[1][2] == "(B)"):
+            COR = GREEN;
+        elif(x[1][2] == "(C)"):
+            COR = YELLOW;
+        elif(x[1][2] == "(D)"):
+            COR = CYAN;
+        else:
+            COR = BOLD;
+
+        printCores(str(dicionario[x])+" ",COR);
+        printCores(x[1][2]+" ",COR);
+        printCores(x[1][0]+" ",COR);
+        printCores(x[1][1]+" ",COR);
+        printCores(x[0]+" ",COR);
+        printCores(x[1][3]+" ",COR);
+        printCores(x[1][4]+" ",COR);
+        print();
+
 def listar():
     fp = open(TODO_FILE, 'r');
 
+    #Recebendo itens da funcao Organizar
     itens = organizar(fp.readlines());
 
-    print("Desordenada: ",itens);
+    # Numerando com a ajuda de dicionarios
+    dicionario = numerando(itens);
 
+    #Ordenacao dos Itens
     itens = ordenarPorPrioridade(itens);
-
-    print("Ordenada por Prioridade:", itens);
-
     ordenarPorDataHora(itens);
+    #Ordenacao dos Itens
 
-    print("Ordenada por DataHora: ",itens);
+    #Imprimindo na tela
+    imprimindo(dicionario,itens);
+
 
 #Verifica se a data1 e menor que data2
 def dataMenor(data1,data2):
