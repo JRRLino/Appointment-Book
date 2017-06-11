@@ -43,19 +43,18 @@ def printCores(texto, cor):
 
 
 def concatenarExtras(extras):
-    s = "";
-    for x in extras:
-        if(x != '' and x != ' '):
-            s = s + " " + x;
+    if(extras == []):
+        return "";
 
-    return s;
+    elemento = extras.pop(0);
+    return elemento +" "+ concatenarExtras(extras);
 
 def adicionar(descricao, extras):
     # não é possível adicionar uma atividade que não possui descrição.
     if descricao == '':
         return False
     else:
-        novaAtividade = descricao + concatenarExtras(extras);
+        novaAtividade = descricao + concatenarExtras([x for x in extras]);
 
     # Escreve no TODO_FILE.
     try:
@@ -76,8 +75,9 @@ def adicionar(descricao, extras):
 
 # Valida a letra da contida na prioridade
 def prioridadeLetraValida(char):
-    if (ord(char) >= ord('A') and ord(char) <= ord('Z')) or (ord(char) >= ord('a') and ord(char) <= ord('z')):
-        return True;
+    if(len(char) == 1):
+        if (ord(char) >= ord('A') and ord(char) <= ord('Z')) or (ord(char) >= ord('a') and ord(char) <= ord('z')):
+            return True;
 
     return False;
 
@@ -301,39 +301,62 @@ def numerando(itens):
 
     return dicionario;
 
-def imprimindo(dicionario,itens):
-    for x in itens:
-        if (x[1][2] == "(A)"):
+#Auxiliando na filtragem
+def checagem(tupla_lista,filtro):
+
+    if tupla_lista == []:
+        return False;
+
+    if(prioridadeLetraValida(filtro)):
+        if(tupla_lista[0] == '('+filtro+')'):
+            return True;
+    else:
+        if(tupla_lista[0] == filtro):
+            return True;
+
+    tupla_lista.pop(0);
+    return checagem(tupla_lista,filtro);
+
+
+def imprimindo(dicionario,itens,filtro):
+    for tupla in itens:
+        if(filtro != ""):
+            #Checando se algum elemento de extras corresponde ao filtro
+            if(not checagem([x for x in (y for y in tupla[1])],filtro)):
+                continue;
+        if (tupla[1][2] == "(A)"):
             COR = BOLD+RED;
-        elif(x[1][2] == "(B)"):
+        elif(tupla[1][2] == "(B)"):
             COR = GREEN;
-        elif(x[1][2] == "(C)"):
+        elif(tupla[1][2] == "(C)"):
             COR = BLUE;
-        elif(x[1][2] == "(D)"):
+        elif(tupla[1][2] == "(D)"):
             COR = CYAN;
         else:
             COR = RESET;
 
-        printCores(str(dicionario[x])+" ",COR);
+        #imprimindo o número que está no dicionario
+        #relacão entre uma tupla e um inteiro
+        printCores(str(dicionario[tupla])+" ",COR);
 
-        if(x[1][2] != ""):
-            printCores(x[1][2]+" ",COR);
+        if(tupla[1][2] != ""):
+            printCores(tupla[1][2]+" ",COR);
 
-        if(x[1][0] != ""):
-            printCores(x[1][0][0]+x[1][0][1]+"/"+x[1][0][2]+x[1][0][3]+"/"+x[1][0][4]+x[1][0][5]+x[1][0][6]+x[1][0][7]+" ",COR);
-        if(x[1][1] != ""):
-            printCores(x[1][1][0]+x[1][1][1]+"h"+x[1][1][2]+x[1][1][3]+"m"+" ",COR);
-        printCores(x[0]+" ",COR);
-        if(x[1][3] != ""):
-            printCores(x[1][3]+" ",COR);
-        if(x[1][4] != ""):
-            printCores(x[1][4]+" ",COR);
+        if(tupla[1][0] != ""):
+            printCores(tupla[1][0][0]+tupla[1][0][1]+"/"+tupla[1][0][2]+tupla[1][0][3]+"/"+tupla[1][0][4]+tupla[1][0][5]+tupla[1][0][6]+tupla[1][0][7]+" ",COR);
+        if(tupla[1][1] != ""):
+            printCores(tupla[1][1][0]+tupla[1][1][1]+"h"+tupla[1][1][2]+tupla[1][1][3]+"m"+" ",COR);
+        printCores(tupla[0]+" ",COR);
+        if(tupla[1][3] != ""):
+            printCores(tupla[1][3]+" ",COR);
+        if(tupla[1][4] != ""):
+            printCores(tupla[1][4]+" ",COR);
         print();
 
-def listar():
+def listar(filtro):
     fp = open(TODO_FILE, 'r');
 
-    #Recebendo itens da funcao Organizar
+    #Recebendo itens da função Organizar
     itens = organizar(fp.readlines());
 
     # Numerando com a ajuda de dicionarios
@@ -345,7 +368,7 @@ def listar():
     #Ordenacao dos Itens
 
     #Imprimindo na tela
-    imprimindo(dicionario,itens);
+    imprimindo(dicionario,itens,filtro);
 
     fp.close();
 
@@ -456,9 +479,8 @@ def fazerAuxiliar(dicionario,num):
     encontrou = False;
 
     for key,value in dicionario.items():
-        print(key,value);
         if(int(value) == int(num)):
-            g.write(key[0] + concatenarExtras(key[1]));
+            g.write(key[0] + concatenarExtras([x for x in key[1]]));
             g.write('\n');
             encontrou = True;
 
@@ -492,7 +514,7 @@ def removerAuxiliar(dicionario,num):
     for key,value in dicionario.items():
         #print(key,value);
         if (int(value) != int(num)):
-            g.write(key[0] + concatenarExtras(key[1]));
+            g.write(key[0] + concatenarExtras([x for x in key[1]]));
             g.write("\n");
         else:
             encontrou = True;
@@ -530,7 +552,7 @@ def priorizar_auxiliar(dicionario,num,p):
 
     for key,value in dicionario.items():
         if(int(value) != int(num)):
-            g.write(key[0] + concatenarExtras(key[1]));
+            g.write(key[0] + concatenarExtras([x for x in key[1]]));
             g.write('\n');
         else:
             g.write(key[0] + key[1][0] + " " + key[1][1] + " " +'('+p+')' + " " + key[1][3] + key[1][4]);
@@ -569,7 +591,6 @@ def priorizar(num, p):
 
 #Verificando o comando de remover
 def verificar(comando):
-
     s = ""
 
     for x in comando:
@@ -577,7 +598,12 @@ def verificar(comando):
 
     if(soDigitos(s)):
         return int(s);
+def toString(comando):
+    if(comando == []):
+        return "";
 
+    elemento = comando.pop(0);
+    return elemento + toString(comando);
 def processarComandos(comandos):
 
     if comandos[1] == ADICIONAR:
@@ -588,7 +614,10 @@ def processarComandos(comandos):
         # itemParaAdicionar = (descricao, (prioridade, data, hora, contexto, projeto))
         adicionar(itemParaAdicionar[0], itemParaAdicionar[1])  # novos itens não têm prioridade
     elif comandos[1] == LISTAR:
-        listar();
+        comandos.pop(0) #remove 'agenda.py'
+        comandos.pop(0) #remove 'listar'
+
+        listar(toString(comandos));
 
     elif comandos[1] == REMOVER:
         comandos.pop(0) #remove 'agenda.py'
