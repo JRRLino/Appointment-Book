@@ -1,4 +1,8 @@
 import sys
+from colorama import init
+from termcolor import *
+
+init()
 
 TODO_FILE = 'todo.txt'
 ARCHIVE_FILE = 'done.txt'
@@ -25,8 +29,7 @@ LISTAR = 'l'
 # printCores('Texto amarelo e negrito', YELLOW + BOLD)
 
 def printCores(texto, cor):
-    print(cor + texto + RESET,end="")
-
+    print(cor + texto + RESET, end="")
 
 # Adiciona um compromisso aa agenda. Um compromisso tem no minimo
 # uma descrição. Adicionalmente, pode ter, em caráter opcional, uma
@@ -569,7 +572,7 @@ def priorizar_auxiliar(dicionario,num,p):
             g.write(key[0] + concatenarExtras([x for x in key[1]]));
             g.write('\n');
         else:
-            g.write(key[0] + key[1][0] + " " + key[1][1] + " " +'('+p+')' + " " + key[1][3] + key[1][4]);
+            g.write(key[0] + key[1][0] + " " + key[1][1] + " " + p + " " + key[1][3] + key[1][4]);
             g.write('\n');
             encontrou = True;
 
@@ -623,8 +626,6 @@ def processarComandos(comandos):
     if comandos[1] == ADICIONAR:
         comandos.pop(0)  # remove 'agenda.py'
         comandos.pop(0)  # remove 'adicionar'
-
-        print(comandos);
 
         itemParaAdicionar = organizar([' '.join(comandos)],False)[0]
 

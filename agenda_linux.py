@@ -527,7 +527,6 @@ def removerAuxiliar(dicionario,num):
     encontrou = False;
 
     for key,value in dicionario.items():
-        #print(key,value);
         if (int(value) != int(num)):
             g.write(key[0] + concatenarExtras([x for x in key[1]]));
             g.write("\n");
@@ -624,8 +623,6 @@ def processarComandos(comandos):
     if comandos[1] == ADICIONAR:
         comandos.pop(0)  # remove 'agenda.py'
         comandos.pop(0)  # remove 'adicionar'
-
-        print(comandos);
 
         itemParaAdicionar = organizar([' '.join(comandos)],False)[0]
 
