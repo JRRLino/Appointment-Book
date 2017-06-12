@@ -1,3 +1,6 @@
 venv
 .pyc
 .DS_Store
+.idea
+projeto.pdf
+todo.bak.txt
