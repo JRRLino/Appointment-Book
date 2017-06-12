@@ -1,4 +1,7 @@
+Acabar o capitulo nove de O Silmarillion   (C)   
 Publicar a especificao do projeto de IF968 terminada.   (B)  +IF968 
-Dormir 11062017 0300  @Casa  
-Ler artigo IST. 23052017 1800 (A)  +Servico 
-Estudar Reflexao da Luz 10062017 1400 (A) @Casa
+Dormir 11062017 0300 [B] @Casa  
+Ler artigo IST. 23052017 1800 [A]  +Servico 
+Estudar Quimica   [A]   
+Estudar Reflexao da Luz 10062017 1400 [B] @Casa  
+Estudar Mais   (D) @Casa
