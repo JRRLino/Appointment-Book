@@ -98,6 +98,7 @@ def HoradoisPrimeiros(horaMin):
 
     if (inteiro >= 0 and inteiro <= 23):
         return True;
+
     return False;
 
 

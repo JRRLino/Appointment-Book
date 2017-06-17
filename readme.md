@@ -1,10 +1,7 @@
-Projeto para a disciplina de Programação 1 (IF968) - CIn UFPE
-
-Linux
+Linux (agenda_linux.py)
 
 Prioridade: Para esta função, utilize Colchetes( [ ] )
 
-Windows
+Windows (agenda.py)
 
-Prioridade: Para esta função, utilize Parênteses( ( ) )
-Instalação extra(s): termcolor e colorama
+Funciona conforme a especificação do projeto

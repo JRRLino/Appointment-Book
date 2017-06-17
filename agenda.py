@@ -52,12 +52,12 @@ def concatenarExtras(extras):
     elemento = extras.pop(0);
     return elemento +" "+ concatenarExtras(extras);
 
-def adicionar(descricao, extras):
+def adicionar(extras, descricao):
     # não é possível adicionar uma atividade que não possui descrição.
     if descricao == '':
         return False
     else:
-        novaAtividade = descricao + concatenarExtras([x for x in extras]);
+        novaAtividade = concatenarExtras([x for x in extras]) + descricao;
 
     # Escreve no TODO_FILE.
     try:
@@ -78,23 +78,23 @@ def adicionar(descricao, extras):
 
 # Valida a letra da contida na prioridade
 def prioridadeLetraValida(char):
-    if(len(char) == 1):
-        if (ord(char) >= ord('A') and ord(char) <= ord('Z')) or (ord(char) >= ord('a') and ord(char) <= ord('z')):
-            return True;
+    if (ord(char) >= ord('A') and ord(char) <= ord('Z')) or (ord(char) >= ord('a') and ord(char) <= ord('z')):
+        return True;
 
     return False;
 
 # Valida a prioridade.
-def prioridadeValida(tokens,i):
-    if(i == len(tokens)):
-        return "";
+def prioridadeValida(prioridade):
+    if len(prioridade) == 3:
+        if prioridadeLetraValida(prioridade[1]):
+            return True;
+    elif(len(prioridade) == 1):
+        if prioridadeLetraValida(prioridade):
+            return True;
 
-    if len(tokens[i]) == 3:
-        if(tokens[i][0] == '(' and prioridadeLetraValida(tokens[i][1]) and tokens[i][2] == ')'):
-            return tokens[i];
+    return False;
 
-    return prioridadeValida(tokens,i+1);
-
+#Checa os dois primeiros caracteres do relógio
 def HoradoisPrimeiros(horaMin):
     inteiro = int(horaMin[0] + horaMin[1]);
 
@@ -103,6 +103,7 @@ def HoradoisPrimeiros(horaMin):
     return False;
 
 
+#Checa os dois ultimos caracteres do relógio
 def HoradoisUltimos(horaMin):
     inteiro = int(horaMin[2] + horaMin[3]);
 
@@ -114,16 +115,15 @@ def HoradoisUltimos(horaMin):
 
 # Valida a hora. Consideramos que o dia tem 24 horas, como no Brasil, ao invés
 # de dois blocos de 12 (AM e PM), como nos EUA.
-def horaValida(tokens,i):
+def horaValida(hora):
 
-    if i == len(tokens):
-        return "";
+    if(hora == ""):
+        return True;
 
-    if len(tokens[i]) == 4 and soDigitos(tokens[i]) and HoradoisPrimeiros(tokens[i]) and HoradoisUltimos(tokens[i]):
-        return tokens[i];
+    if len(hora) == 4 and soDigitos(hora) and HoradoisPrimeiros(hora) and HoradoisUltimos(hora):
+        return True;
 
-    return horaValida(tokens,i+1);
-
+    return False;
 
 # Valida datas. Verificar inclusive se não estamos tentando
 # colocar 31 dias em fevereiro. Não precisamos nos certificar, porém,
@@ -141,6 +141,8 @@ def DataMesValido(data):
 def DataDiaValido(data):
     soma = int(data[0] + data[1]);
 
+    #print(soma);
+
     if (soma >= 0 and soma <= 30):
         if (soma == 30 and data[2] + [3] == "02"):
             return False;
@@ -148,17 +150,14 @@ def DataDiaValido(data):
 
     return False;
 
+def dataValida(data):
+    #print(DataDiaValido(data));
+    #print(DataMesValido(data));
 
-def dataValida(tokens,i):
+    if len(data) == 8 and soDigitos(data) and DataDiaValido(data) and DataMesValido(data):
+        return True;
 
-    if(i == len(tokens)):
-        return "";
-
-    if len(tokens[i]) == 8 and soDigitos(tokens[i]) and DataDiaValido(tokens[i]) and DataMesValido(tokens[i]):
-        return tokens[i]
-
-    return dataValida(tokens,i+1);
-
+    return False;
 
 # Valida que o string do projeto está no formato correto.
 def projetoValido(tokens,i):
@@ -171,11 +170,10 @@ def projetoValido(tokens,i):
 
     return projetoValido(tokens,i+1);
 
-
 # Valida que o string do contexto está no formato correto.
 def contextoValido(tokens,i):
 
-    if(i == len(tokens)):
+    if (i == len(tokens)):
         return "";
 
     if len(tokens[i]) >= 2 and tokens[i][0] == '@':
@@ -226,18 +224,6 @@ def find(array,index,elemento):
 
     return find(array,index+1,elemento);
 
-def auxiliarLeituraPrioridades(tokens,i):
-
-    if i == len(tokens):
-        return tokens;
-
-    if(len(tokens[i]) == 3):
-        if(tokens[i][0] == '[' and prioridadeLetraValida(tokens[i][1]) and tokens[i][2] == ']'):
-            s = '('+tokens[i][1]+')'
-            tokens[i] = s;
-
-    return auxiliarLeituraPrioridades(tokens,i+1);
-
 #Retornará uma lista de tuplas
 def organizar(linhas,leitura):
     itens = []
@@ -253,9 +239,6 @@ def organizar(linhas,leitura):
         l = l.strip()  # remove espaços em branco e quebras de linha do começo e do fim
         tokens = l.split()  # quebra o string em palavras
 
-        if (leitura):
-            tokens = auxiliarLeituraPrioridades(tokens, 0);
-
         # Processa os tokens um a um, verificando se são as partes da atividade.
         # Por exemplo, se o primeiro token é uma data válida, deve ser guardado
         # na variável data e posteriormente removido a lista de tokens. Feito isso,
@@ -265,34 +248,41 @@ def organizar(linhas,leitura):
         # corresponde à descrição. É só transformar a lista de tokens em um string e
         # construir a tupla com as informações disponíveis.
 
-        # Checando prioridade
-        if (prioridadeValida(tokens,0) != ""):
-            pri = prioridadeValida(tokens,0);
-            tokens.pop(find(tokens,0,pri));
+        #print(tokens);
 
         # Checando data
-        if (dataValida(tokens,0) != ""):
-            data = dataValida(tokens,0);
-            tokens.pop(find(tokens,0,data));
 
-        # Checando hora
-        if (horaValida(tokens,0) != ""):
-            hora = horaValida(tokens,0);
-            tokens.pop(find(tokens,0,hora));
+        if(soDigitos(tokens[0])):
+            if (dataValida(tokens[0])):
+                data = tokens[0];
+                tokens.pop(0);
 
-        # Checando Projeto
-        if (projetoValido(tokens,0) != ""):
-            projeto = projetoValido(tokens,0);
-            tokens.pop(find(tokens,0,projeto));
+        #Checando a hora
+        if(soDigitos(tokens[0])):
+            if (horaValida(tokens[0])):
+                if(tokens[0] != ""):
+                    hora = tokens[0];
+                    tokens.pop(0);
+
+        # Checando prioridade
+        if(leitura):
+            if (prioridadeValida(tokens[0])):
+                pri = tokens[0];
+                tokens.pop(0);
 
         # Checando Contexto
         if (contextoValido(tokens,0) != ""):
             contexto = contextoValido(tokens,0);
             tokens.pop(find(tokens,0,contexto));
 
+        # Checando Projeto
+        if (projetoValido(tokens,0) != ""):
+            projeto = projetoValido(tokens,0);
+            tokens.pop(find(tokens,0,projeto));
+
         desc = TokensToString(tokens);
 
-        itens.append((desc, (data, hora, pri, contexto, projeto)))
+        itens.append(((data, hora, pri, contexto, projeto),desc))
 
     return itens
 
@@ -308,6 +298,7 @@ def organizar(linhas,leitura):
 #Deixando o dicionario como global
 dicionario = {};
 
+#Função para atribuir um inteiro como referência para cada tupla
 def numerando(itens):
     i = 1;
 
@@ -334,20 +325,19 @@ def checagem(tupla_lista,filtro):
     tupla_lista.pop(0);
     return checagem(tupla_lista,filtro);
 
-
 def imprimindo(dicionario,itens,filtro):
     for tupla in itens:
         if(filtro != ""):
             #Checando se algum elemento de extras corresponde ao filtro
-            if(not checagem([x for x in (y for y in tupla[1])],filtro)):
+            if(not checagem([x for x in (y for y in tupla[0])],filtro)):
                 continue;
-        if (tupla[1][2] == "(A)"):
+        if (tupla[0][2] == "(A)"):
             COR = BOLD+RED;
-        elif(tupla[1][2] == "(B)"):
+        elif(tupla[0][2] == "(B)"):
             COR = GREEN;
-        elif(tupla[1][2] == "(C)"):
+        elif(tupla[0][2] == "(C)"):
             COR = BLUE;
-        elif(tupla[1][2] == "(D)"):
+        elif(tupla[0][2] == "(D)"):
             COR = CYAN;
         else:
             COR = RESET;
@@ -356,18 +346,18 @@ def imprimindo(dicionario,itens,filtro):
         #relacão entre uma tupla e um inteiro
         printCores(str(dicionario[tupla])+" ",COR);
 
-        if(tupla[1][2] != ""):
-            printCores(tupla[1][2]+" ",COR);
+        if(tupla[0][2] != ""):
+            printCores(tupla[0][2]+" ",COR);
 
-        if(tupla[1][0] != ""):
-            printCores(tupla[1][0][0]+tupla[1][0][1]+"/"+tupla[1][0][2]+tupla[1][0][3]+"/"+tupla[1][0][4]+tupla[1][0][5]+tupla[1][0][6]+tupla[1][0][7]+" ",COR);
-        if(tupla[1][1] != ""):
-            printCores(tupla[1][1][0]+tupla[1][1][1]+"h"+tupla[1][1][2]+tupla[1][1][3]+"m"+" ",COR);
-        printCores(tupla[0]+" ",COR);
-        if(tupla[1][3] != ""):
-            printCores(tupla[1][3]+" ",COR);
-        if(tupla[1][4] != ""):
-            printCores(tupla[1][4]+" ",COR);
+        if(tupla[0][0] != ""):
+            printCores(tupla[0][0][0]+tupla[0][0][1]+"/"+tupla[0][0][2]+tupla[0][0][3]+"/"+tupla[0][0][4]+tupla[0][0][5]+tupla[0][0][6]+tupla[0][0][7]+" ",COR);
+        if(tupla[0][1] != ""):
+            printCores(tupla[0][1][0]+tupla[0][1][1]+"h"+tupla[0][1][2]+tupla[0][1][3]+"m"+" ",COR);
+        printCores(tupla[1]+" ",COR);
+        if(tupla[0][3] != ""):
+            printCores(tupla[0][3]+" ",COR);
+        if(tupla[0][4] != ""):
+            printCores(tupla[0][4]+" ",COR);
         print();
 
 def listar(filtro):
@@ -427,8 +417,6 @@ def horaMenor(hora1,hora2):
             return 0;
 
     return -1;
-
-
 def swap(item1,item2):
 
     aux = item1;
@@ -445,16 +433,15 @@ OBS: Esta funcao NAO retornara algo!!!
 ===========================
 '''
 def ordenarPorDataHora(itens):
-
     i = 0;
     while(i < len(itens)-1):
         j = i + 1;
         while(j < len(itens)):
-            if(itens[i][1][2] == itens[j][1][2]):
-                if(dataMenor(itens[i][1][0],itens[j][1][0]) == 0):
-                    if(horaMenor(itens[i][1][1],itens[j][1][1]) == -1):
+            if(itens[i][0][2] == itens[j][0][2]):
+                if(dataMenor(itens[i][0][0],itens[j][0][0]) == 0):
+                    if(horaMenor(itens[i][0][1],itens[j][0][1]) == -1):
                         itens[i],itens[j] = swap(itens[i],itens[j]);
-                if(dataMenor(itens[i][1][0],itens[j][1][0]) == -1):
+                if(dataMenor(itens[i][0][0],itens[j][0][0]) == -1):
                     itens[i],itens[j] = swap(itens[i],itens[j]);
             j = j + 1;
 
@@ -468,10 +455,10 @@ def ordenarPorPrioridade(itens):
 
     pivo = itens[len(itens)//2];
 
-    if(pivo[1][2] == ""):
+    if(pivo[0][2] == ""):
         p = " ";
     else:
-        p = pivo[1][2][1];
+        p = pivo[0][2][1];
 
     maiores = [];
     menores = [];
@@ -479,13 +466,13 @@ def ordenarPorPrioridade(itens):
     SemPrioridade = [];
 
     for x in itens:
-        if(x[1][2] == ""):
+        if(x[0][2] == ""):
             SemPrioridade.append(x);
-        elif(ord(x[1][2][1]) > ord(p)):
+        elif(ord(x[0][2][1]) > ord(p)):
             maiores.append(x);
-        elif(ord(x[1][2][1]) < ord(p)):
+        elif(ord(x[0][2][1]) < ord(p)):
             menores.append(x);
-        elif(ord(x[1][2][1]) == ord(p)):
+        elif(ord(x[0][2][1]) == ord(p)):
             iguais.append(x);
 
     return ordenarPorPrioridade(menores) + iguais + ordenarPorPrioridade(maiores) + SemPrioridade;
@@ -497,7 +484,7 @@ def fazerAuxiliar(dicionario,num):
 
     for key,value in dicionario.items():
         if(int(value) == int(num)):
-            g.write(key[0] + concatenarExtras([x for x in key[1]]));
+            g.write(concatenarExtras([x for x in key[0]])+key[1]);
             g.write('\n');
             encontrou = True;
 
@@ -529,9 +516,8 @@ def removerAuxiliar(dicionario,num):
     encontrou = False;
 
     for key,value in dicionario.items():
-        #print(key,value);
         if (int(value) != int(num)):
-            g.write(key[0] + concatenarExtras([x for x in key[1]]));
+            g.write(concatenarExtras([x for x in key[0]])+key[1]);
             g.write("\n");
         else:
             encontrou = True;
@@ -569,10 +555,10 @@ def priorizar_auxiliar(dicionario,num,p):
 
     for key,value in dicionario.items():
         if(int(value) != int(num)):
-            g.write(key[0] + concatenarExtras([x for x in key[1]]));
+            g.write(concatenarExtras([x for x in key[0]])+key[1]);
             g.write('\n');
         else:
-            g.write(key[0] + key[1][0] + " " + key[1][1] + " " + p + " " + key[1][3] + key[1][4]);
+            g.write(key[0][0] + " " + key[0][1] + " " + '('+p+')'+ " " + key[0][3] +" "+ key[0][4]+ " " + key[1]);
             g.write('\n');
             encontrou = True;
 
@@ -590,8 +576,6 @@ def priorizar(num, p):
     itens = organizar(backup,True);
 
     dicionario = numerando(itens);
-
-    #imprimindo(dicionario,itens);
 
     f.close();
 
@@ -628,8 +612,8 @@ def processarComandos(comandos):
         comandos.pop(0)  # remove 'adicionar'
 
         itemParaAdicionar = organizar([' '.join(comandos)],False)[0]
-
         # itemParaAdicionar = (descricao, (prioridade, data, hora, contexto, projeto))
+
         adicionar(itemParaAdicionar[0], itemParaAdicionar[1])  # novos itens não têm prioridade
     elif comandos[1] == LISTAR:
         comandos.pop(0) #remove 'agenda.py'
@@ -654,6 +638,7 @@ def processarComandos(comandos):
     elif comandos[1] == PRIORIZAR:
         comandos.pop(0) #remove 'agenda.py';
         comandos.pop(0) #remove 'priorizar'
+
 
         priorizar(comandos[0],comandos[1]);
 
